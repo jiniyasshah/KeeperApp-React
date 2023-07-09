@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import Fab from "@mui/material/Fab";
 import Zoom from "@mui/material/Zoom";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 function CreateArea(props) {
   const [data, setData] = useState({
@@ -14,9 +15,19 @@ function CreateArea(props) {
     sethide(true);
   }
 
-  function onBlur() {
-    sethide(false);
-  }
+  let menuRef = useRef();
+
+  useEffect(() => {
+    let handler = (e) => {
+      let eventComing = e.target;
+
+      if (!menuRef.current.contains(eventComing)) {
+        sethide(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handler);
+  });
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -38,7 +49,7 @@ function CreateArea(props) {
   }
   return (
     <div>
-      <form onFocus={onClick} onBlur={onBlur} className="create-note">
+      <form onFocus={onClick} className="create-note" ref={menuRef}>
         {hide && (
           <input
             onChange={handleChange}
@@ -46,6 +57,7 @@ function CreateArea(props) {
             placeholder="Title"
             value={data.title}
             required
+            autocomplete="off"
           />
         )}
         <textarea
@@ -55,6 +67,7 @@ function CreateArea(props) {
           rows={hide ? 3 : 1}
           value={data.content}
           required
+          autoComplete="off"
         />
         {(data.content.length && data.title.length) !== 0 ? (
           <Zoom in={true}>
